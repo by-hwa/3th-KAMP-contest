@@ -119,9 +119,9 @@ def training(epochs, model, train_loader, val_loader, opt_func=torch.optim.Adam)
             optimizer2.step()
             optimizer2.zero_grad()
 
-    result = evaluate(model, val_loader, epoch+1)
-    model.epoch_end(epoch, result)
-    history.append(result)
+        result = evaluate(model, val_loader, epoch+1)
+        model.epoch_end(epoch, result)
+        history.append(result)
 
     return history
 
