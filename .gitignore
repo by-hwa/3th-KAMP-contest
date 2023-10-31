@@ -1,5 +1,4 @@
 *.hwp
-*.zip
 .DS_Store
 /열처리
 /__pycache__
