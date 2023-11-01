@@ -25,7 +25,7 @@ def plot_history(history):
     losses2 = [x['val_loss2'] for x in history]
 
     plt.plot(losses1, '-x', label="loss1")
-    plt.plot(losses2, '-x', lable="loss2")
+    plt.plot(losses2, '-x', label="loss2")
     plt.xlabel('epoch')
     plt.ylabel('loss')
     plt.legend()
