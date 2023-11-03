@@ -54,7 +54,7 @@ def ROC(y_test, y_pred):
     plt.plot(fpr, 1-fpr, 'r:')
     plt.plot(fpr[idx], tpr[idx], 'ro')
     plt.legend(loc=4)
-    plt.grit()
+    plt.grid()
     plt.show()
 
     return tr[idx]
@@ -71,6 +71,6 @@ def confusion_matrix(target, predicted, prec=False):
         sns.heatmap(confusion_matrix/np.sum(confusion_matrix), annot=True, fmt='.2%', cmap='Blues')
 
     else:
-        sns.heatmap(confusion_matrix, anoot=True, fmt='d')
+        sns.heatmap(confusion_matrix, annot=True, fmt='d')
 
     plt.show()

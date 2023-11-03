@@ -66,8 +66,10 @@ class UsadModel(nn.Module):
         w3 = self.decoder2(self.encoder(w1))
 
         # MSE
-        loss1 = 1/n*torch.mean((batch-w1)**2+(1-1/n)*torch.mean((batch-w3)**2))
-        loss2 = 1/n*torch.mean((batch-w2)**2-(1-1/n)*torch.mean((batch-w3)**2))
+
+        loss1 = 1/n*torch.mean((batch-w1)**2)+(1-1/n)*torch.mean((batch-w3)**2)
+        loss2 = 1/n*torch.mean((batch-w2)**2)-(1-1/n)*torch.mean((batch-w3)**2)
+        
 
         return loss1, loss2
     
@@ -78,8 +80,9 @@ class UsadModel(nn.Module):
             w2 = self.decoder2(z)
             w3 = self.decoder2(self.encoder(w1))
             # MSE
-            loss1 = 1/n*torch.mean((batch-w1)**2+(1-1/n)*torch.mean((batch-w3)**2))
-            loss2 = 1/n*torch.mean((batch-w2)**2-(1-1/n)*torch.mean((batch-w3)**2))
+            loss1 = 1/n*torch.mean((batch-w1)**2)+(1-1/n)*torch.mean((batch-w3)**2)
+            loss2 = 1/n*torch.mean((batch-w2)**2)-(1-1/n)*torch.mean((batch-w3)**2)
+            
 
         return {'val_loss1':loss1, 'val_loss2':loss2}
     
@@ -100,8 +103,8 @@ def evaluate(model, val_loader, n):
     
 def training(epochs, model, train_loader, val_loader, opt_func=torch.optim.Adam):
     history = []
-    optimizer1 = opt_func(list(model.encoder.parameters())+ list(model.decoder1.parameters()))
-    optimizer2 = opt_func(list(model.encoder.parameters())+ list(model.decoder2.parameters()))
+    optimizer1 = opt_func(list(model.encoder.parameters())+ list(model.decoder1.parameters()), lr=0.1)
+    optimizer2 = opt_func(list(model.encoder.parameters())+ list(model.decoder2.parameters()), lr=0.1)
 
     for epoch in range(epochs):
         for [batch] in train_loader:
@@ -120,7 +123,7 @@ def training(epochs, model, train_loader, val_loader, opt_func=torch.optim.Adam)
             optimizer2.zero_grad()
 
         result = evaluate(model, val_loader, epoch+1)
-        model.epoch_end(epoch, result)
+        model.epoch_end(epoch+1, result)
         history.append(result)
 
     return history
@@ -128,10 +131,10 @@ def training(epochs, model, train_loader, val_loader, opt_func=torch.optim.Adam)
 def testing(model, test_loader, alpha=.5, beta=.5):
     results = []
     with torch.no_grad():
-        for [batch] in test_loader():
+        for [batch] in test_loader:
             batch = utils.to_device(batch, device)
             w1 = model.decoder1(model.encoder(batch))
-            w2 = model.decoder2(w1)
+            w2 = model.decoder2(model.encoder(w1))
             results.append(alpha*torch.mean((batch-w1)**2, axis=1)+beta*torch.mean((batch-w2)**2, axis=1))
-    
+
     return results
